@@ -13,6 +13,11 @@ export function ContactForm() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault(); setState("sending"); setError("");
     const form = e.currentTarget; const data = Object.fromEntries(new FormData(form));
+    if (window.location.hostname.endsWith("github.io")) {
+      const message = Object.entries(data).filter(([key]) => key !== "website" && key !== "consent").map(([key, value]) => `${key}: ${value}`).join("\n");
+      window.location.href = `mailto:ampatiag71@gmail.com?subject=${encodeURIComponent("Landseaire Logistics Assistance Request")}&body=${encodeURIComponent(message)}`;
+      setState("success"); return;
+    }
     try { const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }); const body = await res.json(); if (!res.ok) throw new Error(body.error || "Unable to send your request."); form.reset(); setState("success"); }
     catch (err) { setError(err instanceof Error ? err.message : "Unable to send your request."); setState("error"); }
   }

@@ -21,3 +21,7 @@ Update services, contacts, tagline, email, and address in `content/company.ts`. 
 ## Deploy
 
 Set `NEXT_PUBLIC_SITE_URL` to the approved domain, connect the form-email provider, then deploy through the selected hosting platform. Review the logo, legal/privacy content, and any supplied photography before launch.
+
+## GitHub Pages
+
+The included workflow publishes a static version to GitHub Pages on every push to `main`. GitHub Pages cannot run the server-side contact endpoint, so its form opens a prefilled email to the President's listed address; the server-backed deployment continues to use the API endpoint.
