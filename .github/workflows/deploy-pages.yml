@@ -30,6 +30,8 @@ jobs:
       - run: npm run build
         env:
           GITHUB_ACTIONS: true
+          NEXT_PUBLIC_BASE_PATH: /landseaire-logistics
+          NEXT_PUBLIC_SITE_URL: https://laenseu.github.io/landseaire-logistics
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/client
