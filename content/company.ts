@@ -1,7 +1,6 @@
 export const company = {
   name: "Landseaire Logistics Co.",
   previewHeadline: "Reliable Shipping and Logistics Support Across Every Route",
-  approvedTagline: "[APPROVED_TAGLINE_REQUIRED]",
   businessEmail: "logistics@seantrepas.com.ph", // Confirm: profile email domain differs from company name.
   address: ["3rd Floor, Laiko Building", "372 Cabildo Street", "Intramuros, Manila, Philippines 1002"],
   contacts: [
