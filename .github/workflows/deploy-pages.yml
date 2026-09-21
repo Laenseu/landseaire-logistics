@@ -32,6 +32,10 @@ jobs:
           GITHUB_ACTIONS: true
           NEXT_PUBLIC_BASE_PATH: /landseaire-logistics
           NEXT_PUBLIC_SITE_URL: https://laenseu.github.io/landseaire-logistics
+      - name: Prepare GitHub Pages asset directory
+        run: |
+          mv dist/client/landseaire-logistics/_next dist/client/_next
+          rmdir dist/client/landseaire-logistics
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/client
