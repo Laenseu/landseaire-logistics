@@ -24,7 +24,7 @@ export function ContactForm() {
     try { const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }); const body = await res.json(); if (!res.ok) throw new Error(body.error || "Unable to send your request."); form.reset(); setService(""); setState("success"); }
     catch (err) { setError(err instanceof Error ? err.message : "Unable to send your request."); setState("error"); }
   }
-  return <form onSubmit={submit} className="form-grid"><div className="form-intro wide"><span>Request details</span><p>Fields marked with an asterisk are required.</p></div>
+  return <form onSubmit={submit} className="form-grid"><div className="form-intro wide"><span>Request details</span><p>Fields marked with an asterisk are required.</p></div>{service && <p className="selected-service wide"><span>Selected service</span>{service}</p>}
     {fields.map(([name, label, type, required]) => <label key={name}>{label}{required && <span aria-hidden="true"> *</span>}{name === "service" ? <select name={name} required={required} aria-required={required} value={service} onChange={event => setService(event.target.value)}><option value="" disabled>Select a service</option>{company.services.map(([service]) => <option key={service} value={service}>{service}</option>)}</select> : <input name={name} type={type} required={required} aria-required={required} />}</label>)}
     <label className="wide">Message *<textarea name="message" required aria-required="true" rows={5} /></label>
     <label className="trap" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
