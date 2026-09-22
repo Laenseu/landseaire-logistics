@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://laenseu.github.io/landseaire-logistics/sitemap.xml
