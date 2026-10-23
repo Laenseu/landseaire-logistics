@@ -4,8 +4,8 @@ Completed on 2026-10-23:
 
 - Added centralized Starter, Standard, and Plus Google Workspace pricing, plan features, exchange-rate reference, and annual/flexible calculation utilities.
 - Added a responsive Google Workspace feature-comparison table and official Google pricing link.
-- Added independent edition, billing, and 1–20-user controls that update every website card, comparison, calculator, five-year view, copy summary, and quotation link.
-- Extended quotation prefill and server validation to retain hosting, domain, Workspace edition, users, billing selection, exchange-rate assumption, and estimated annual total.
+- Added independent edition, billing, and 1–20-user controls that update every website card, comparison, calculator, five-year view, and copy summary on a separate budget page.
+- Kept the main contact form focused on logistics service requests. Legacy website-package query parameters no longer change its fields or message.
 - Added an expandable Pricing Sources and Assumptions area, plus documentation of sources, formulas, assumptions, and limitations.
 
 Validation scope:
