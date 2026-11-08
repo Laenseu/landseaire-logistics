@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand-logo";
 import { WebsiteBudget } from "@/components/website-budget";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -15,7 +15,7 @@ export default function WebsiteBudgetPage() {
     <a className="skip" href="#website-budget">Skip to budget planner</a>
     <header className="budget-page-header">
       <a href={`${basePath}/`} aria-label="Landseaire Logistics Co. home">
-        <Image src={`${basePath}/brand/landseaire-logo.png`} alt="Landseaire Logistics Co." width={180} height={80} />
+        <BrandLogo basePath={basePath} />
       </a>
       <a className="budget-back" href={`${basePath}/`}>← Back to main website</a>
     </header>
