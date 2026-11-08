@@ -64,7 +64,7 @@ if (!is_file($configPath) || !is_file($mailerPath)) {
     respond(503, 'Email delivery is being set up. Please contact us by phone or email.');
 }
 $config = require $configPath;
-if (!is_array($config) || ($config['smtp_password'] ?? '') === 'REPLACE_WITH_MAILBOX_PASSWORD') {
+if (!is_array($config) || str_starts_with((string) ($config['smtp_password'] ?? ''), 'REPLACE_WITH_')) {
     respond(503, 'Email delivery is being set up. Please contact us by phone or email.');
 }
 require $mailerPath;
