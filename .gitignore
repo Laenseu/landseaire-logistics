@@ -44,3 +44,7 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+/hostinger/vendor/
+/hostinger-ready/
+/hostinger/contact-config.php
+*.tsbuildinfo

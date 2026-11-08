@@ -11,6 +11,7 @@ const fields = [
 ] as const;
 
 export function ContactForm() {
+  const hostingerEndpoint = process.env.NEXT_PUBLIC_CONTACT_ENDPOINT;
   const [state, setState] = useState<"idle" | "sending" | "success" | "email" | "error">("idle");
   const [error, setError] = useState("");
   const [service, setService] = useState("");
@@ -30,14 +31,21 @@ export function ContactForm() {
     setError("");
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form));
-    if (window.location.hostname.endsWith("github.io")) {
+    const openEmailDraft = () => {
       const body = Object.entries(data).filter(([key]) => key !== "website" && key !== "consent").map(([key, value]) => `${key}: ${value}`).join("\n");
       window.location.href = `mailto:ampatiag71@gmail.com?subject=${encodeURIComponent("Landseaire Logistics Assistance Request")}&body=${encodeURIComponent(body)}`;
       setState("email");
+    };
+    if (window.location.hostname.endsWith("github.io")) {
+      openEmailDraft();
       return;
     }
     try {
-      const response = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+      const response = await fetch(hostingerEndpoint || "/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+      if (response.status === 503 && hostingerEndpoint) {
+        openEmailDraft();
+        return;
+      }
       const result = await response.json() as { error?: string };
       if (!response.ok) throw new Error(result.error || "Unable to send your request.");
       form.reset();
@@ -50,7 +58,7 @@ export function ContactForm() {
     }
   }
 
-  return <form onSubmit={submit} className="form-grid">
+  return <form onSubmit={submit} action={hostingerEndpoint || undefined} method="post" className="form-grid">
     <div className="form-intro wide"><span>Request details</span><p>Fields marked with an asterisk are required.</p></div>
     {service && <p className="selected-service wide"><span>Selected service</span>{service}</p>}
     {fields.map(([name, label, type, required]) => <label key={name}>{label}{required && <span aria-hidden="true"> *</span>}{name === "service" ? <select name={name} required aria-required="true" value={service} onChange={event => setService(event.target.value)}><option value="">Select a service</option>{company.services.map(([item]) => <option key={item} value={item}>{item}</option>)}</select> : <input name={name} type={type} required={Boolean(required)} aria-required={Boolean(required)} />}</label>)}

@@ -1,0 +1,11 @@
+<?php
+// Save as contact-config.php in the hosting account root, beside public_html.
+// Keep this file outside public_html and do not commit the real credentials.
+return [
+    'smtp_host' => 'smtp.hostinger.com',
+    'smtp_port' => 465,
+    'smtp_username' => 'contact@a2landseaire.com',
+    'smtp_password' => 'REPLACE_WITH_MAILBOX_PASSWORD',
+    'from_email' => 'contact@a2landseaire.com',
+    'recipient_email' => 'ampatiag71@gmail.com',
+];
