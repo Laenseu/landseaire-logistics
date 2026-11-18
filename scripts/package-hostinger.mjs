@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm } from "node:fs/promises";
 import { resolve, sep } from "node:path";
 
 const root = process.cwd();
@@ -18,6 +18,4 @@ await cp(build, publicHtml, { recursive: true });
 await cp(resolve(hostinger, "public_html"), publicHtml, { recursive: true });
 await cp(resolve(hostinger, "vendor"), resolve(publicHtml, "api/vendor"), { recursive: true });
 await cp(resolve(hostinger, "contact-config.php.example"), resolve(output, "contact-config.php.example"));
-await writeFile(resolve(publicHtml, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${domain}/sitemap.xml\n`);
-await writeFile(resolve(publicHtml, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${domain}/</loc></url>\n  <url><loc>${domain}/website-budget</loc></url>\n</urlset>\n`);
 console.log(`Hostinger package prepared: ${output}`);

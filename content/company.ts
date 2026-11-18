@@ -1,5 +1,5 @@
 export const company = {
-  name: "Landseaire Logistics Co.",
+  name: "A2 Landseaire Logistics Inc.",
   previewHeadline: "Expert Port Agency Services and Comprehensive Logistics Solutions",
   businessEmail: "ampatiag@a2landseaire.com",
   address: ["3rd Floor, Laiko Building", "372 Cabildo Street", "Intramuros, Manila, Philippines 1002"],

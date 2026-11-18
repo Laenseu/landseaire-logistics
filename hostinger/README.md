@@ -10,7 +10,7 @@ This package targets the Single Web Hosting **Upload your PHP or HTML** option f
 4. Run `npm run package:hostinger`.
 5. ZIP the **contents** of `hostinger-ready/public_html/`, including hidden `.htaccess` files, and upload/extract them into the site's `public_html` directory. `index.html` must be directly in `public_html`.
 
-The package script writes domain-specific `robots.txt` and `sitemap.xml`. The `.htaccess` file serves `/website-budget` from `website-budget.html`.
+The build writes domain-specific `robots.txt` and `sitemap.xml`, listing the homepage and the three service pages. The internal website budget page is excluded from the sitemap and marked `noindex`. The `.htaccess` file serves `/website-budget` from `website-budget.html`.
 
 ## Automatic contact email
 

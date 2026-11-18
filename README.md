@@ -1,6 +1,6 @@
-# Landseaire Logistics Co. website
+# A2 Landseaire Logistics Inc. website
 
-A responsive corporate website for Landseaire Logistics Co., built from the supplied company profile.
+A responsive corporate website for A2 Landseaire Logistics Inc., built from the supplied company profile.
 
 ## Stack
 
@@ -16,7 +16,7 @@ Install dependencies with `npm ci`, copy `.env.example` to `.env.local`, then us
 
 ## Updating content
 
-Update services, contacts, tagline, email, and address in `content/company.ts`. The approved tagline is deliberately stored as `[APPROVED_TAGLINE_REQUIRED]`. The public contact email is `ampatiag@a2landseaire.com`.
+Update services, contacts, email, and address in `content/company.ts`. Service-page copy is in `content/seo-services.ts`. The public contact email is `ampatiag@a2landseaire.com`.
 
 ## Deploy
 

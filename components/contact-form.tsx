@@ -64,7 +64,7 @@ export function ContactForm() {
     {fields.map(([name, label, type, required]) => <label key={name}>{label}{required && <span aria-hidden="true"> *</span>}{name === "service" ? <select name={name} required aria-required="true" value={service} onChange={event => setService(event.target.value)}><option value="">Select a service</option>{company.services.map(([item]) => <option key={item} value={item}>{item}</option>)}</select> : <input name={name} type={type} required={Boolean(required)} aria-required={Boolean(required)} />}</label>)}
     <label className="wide">Message *<textarea name="message" required aria-required="true" rows={5} value={message} onChange={event => setMessage(event.target.value)} /></label>
     <label className="trap" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
-    <label className="consent wide"><input type="checkbox" name="consent" required /> I consent to Landseaire Logistics Co. using these details to respond to my request.</label>
+    <label className="consent wide"><input type="checkbox" name="consent" required /> I consent to A2 Landseaire Logistics Inc. using these details to respond to my request.</label>
     <div className="wide"><button className="button" disabled={state === "sending"}>{state === "sending" ? "Sending request…" : "Send assistance request"}</button><p aria-live="polite" className={state === "error" ? "error" : "success"}>{state === "success" ? "Thank you. Your request has been received." : state === "email" ? "Your email app has opened with your request. Please review it and send the email." : error}</p></div>
   </form>;
 }

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://laenseu.github.io/landseaire-logistics/sitemap.xml
+Sitemap: https://a2landseaire.com/sitemap.xml
