@@ -16,7 +16,7 @@ Install dependencies with `npm ci`, copy `.env.example` to `.env.local`, then us
 
 ## Updating content
 
-Update services, contacts, tagline, email, and address in `content/company.ts`. The approved tagline is deliberately stored as `[APPROVED_TAGLINE_REQUIRED]`. Confirm the business email `logistics@seantrepas.com.ph` before retaining it, as its domain does not match the company name.
+Update services, contacts, tagline, email, and address in `content/company.ts`. The approved tagline is deliberately stored as `[APPROVED_TAGLINE_REQUIRED]`. The public contact email is `ampatiag@a2landseaire.com`.
 
 ## Deploy
 

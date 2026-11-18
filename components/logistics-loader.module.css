@@ -1,0 +1,33 @@
+.overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 42%,#082e55 0%,#041d3b 52%,#02152c 100%);pointer-events:none;opacity:1;transition:opacity .36s ease,visibility .36s ease;animation:failsafeHide .01s 14s forwards}
+.leaving{opacity:0;visibility:hidden}
+.animation{position:relative;width:min(88vw,420px);height:220px}
+.vehicleScene{position:absolute;inset:0 0 28px;display:grid;place-items:center;opacity:0;transform:translateY(5px);will-change:transform,opacity}
+.scene{width:100%;height:auto;max-height:190px;overflow:visible}
+.sea{animation:seaPhase 7.2s linear infinite}
+.land{animation:landPhase 7.2s linear infinite}
+.air{animation:airPhase 7.2s linear infinite}
+.ship{transform-origin:50% 65%;animation:shipSail 2.4s ease-in-out infinite,shipFloat 1.5s ease-in-out infinite alternate}
+.waves{filter:drop-shadow(0 0 4px #19bfff);animation:waveDrift 1.7s ease-in-out infinite alternate}
+.truck{animation:truckDrive 2.4s ease-in-out infinite}
+.wheel{transform-box:fill-box;transform-origin:center;animation:wheelTurn .45s linear infinite}
+.roadMarks{animation:roadMove .55s linear infinite}
+.trails{filter:drop-shadow(0 0 4px #f4ad10);animation:trailFlicker .7s ease-in-out infinite alternate}
+.plane{animation:planeTakeoff 2.4s ease-in-out infinite}
+.airTrails{filter:drop-shadow(0 0 4px #f4ad10);animation:trailFlicker .7s ease-in-out infinite alternate}
+.progressTrack{position:absolute;left:7%;right:7%;bottom:10px;height:2px;overflow:hidden;background:#24709a88;box-shadow:0 0 7px #1675a966}
+.progressFill{display:block;width:38%;height:100%;background:linear-gradient(90deg,transparent,#f4af0b 28%,#ffd763 68%,transparent);box-shadow:0 0 9px #ffc233;animation:progressSweep 1.8s ease-in-out infinite}
+@keyframes seaPhase{0%,2%{opacity:0;transform:translateY(5px)}5%,27%{opacity:1;transform:none}32%,100%{opacity:0;transform:translateY(-4px)}}
+@keyframes landPhase{0%,32%{opacity:0;transform:translateY(5px)}37%,59%{opacity:1;transform:none}65%,100%{opacity:0;transform:translateY(-4px)}}
+@keyframes airPhase{0%,65%{opacity:0;transform:translateY(5px)}70%,94%{opacity:1;transform:none}99%,100%{opacity:0;transform:translateY(-4px)}}
+@keyframes shipSail{0%{translate:-18px 0}100%{translate:18px 0}}
+@keyframes shipFloat{from{transform:rotate(-1deg) translateY(2px)}to{transform:rotate(1deg) translateY(-2px)}}
+@keyframes waveDrift{from{translate:-6px 0;opacity:.7}to{translate:6px 0;opacity:1}}
+@keyframes truckDrive{0%{translate:-26px 0}100%{translate:19px 0}}
+@keyframes wheelTurn{to{transform:rotate(360deg)}}
+@keyframes roadMove{to{translate:-20px 0}}
+@keyframes trailFlicker{from{opacity:.35;translate:-8px 0}to{opacity:1;translate:2px 0}}
+@keyframes planeTakeoff{0%{transform:translate(-35px,20px) rotate(0deg)}100%{transform:translate(28px,-25px) rotate(-8deg)}}
+@keyframes progressSweep{from{transform:translateX(-110%)}to{transform:translateX(280%)}}
+@keyframes failsafeHide{to{opacity:0;visibility:hidden}}
+@media(max-width:540px){.animation{height:190px}.vehicleScene{inset:0 0 24px}.progressTrack{bottom:9px}}
+@media(prefers-reduced-motion:reduce){.overlay{transition:none;animation:failsafeHide .01s 14s forwards}.vehicleScene,.ship,.waves,.truck,.wheel,.roadMarks,.trails,.plane,.airTrails,.progressFill{animation:none!important;transform:none!important;translate:none!important}.sea{opacity:1}.land,.air{opacity:0}.progressFill{width:38%;background:#f4af0b;box-shadow:none}}

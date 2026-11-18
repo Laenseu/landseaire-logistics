@@ -1,10 +1,10 @@
 export const company = {
   name: "Landseaire Logistics Co.",
   previewHeadline: "Expert Port Agency Services and Comprehensive Logistics Solutions",
-  businessEmail: "logistics@seantrepas.com.ph", // Confirm: profile email domain differs from company name.
+  businessEmail: "ampatiag@a2landseaire.com",
   address: ["3rd Floor, Laiko Building", "372 Cabildo Street", "Intramuros, Manila, Philippines 1002"],
   contacts: [
-    { name: "Arlene M. Patiag", role: "President", mobile: "09173222571", whatsapp: "09472051903", email: "ampatiag71@gmail.com" },
+    { name: "Arlene M. Patiag", role: "President", mobile: "09173222571", whatsapp: "09472051903", email: "ampatiag@a2landseaire.com" },
     { name: "Arlene D. Figueroa", role: "Admin and Finance", mobile: "09173236674", email: "arlenefigueroa6674@gmail.com" },
     { name: "Mellan O. Arcallana", role: "Licensed Customs Broker", mobile: "09087238873" },
   ],

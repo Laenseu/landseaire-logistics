@@ -33,7 +33,7 @@ export function ContactForm() {
     const data = Object.fromEntries(new FormData(form));
     const openEmailDraft = () => {
       const body = Object.entries(data).filter(([key]) => key !== "website" && key !== "consent").map(([key, value]) => `${key}: ${value}`).join("\n");
-      window.location.href = `mailto:ampatiag71@gmail.com?subject=${encodeURIComponent("Landseaire Logistics Assistance Request")}&body=${encodeURIComponent(body)}`;
+      window.location.href = `mailto:${company.businessEmail}?subject=${encodeURIComponent("Landseaire Logistics Assistance Request")}&body=${encodeURIComponent(body)}`;
       setState("email");
     };
     if (window.location.hostname.endsWith("github.io")) {
