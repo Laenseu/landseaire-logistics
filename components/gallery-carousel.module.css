@@ -11,9 +11,11 @@
 .backdrop{filter:blur(30px) brightness(.42);transform:scale(1.08)}
 .photo{animation:show-photo .35s ease both}
 .count{position:absolute;z-index:2;bottom:1rem;left:1rem;padding:.3rem .65rem;background:#061d42d9;color:#fff;border:1px solid #ffffff55;border-radius:3px;font-size:.8rem;font-weight:800;letter-spacing:.1em}
+.playback{position:absolute;z-index:2;top:1rem;right:1rem;display:grid;place-items:center;width:38px;height:38px;padding:0;border:1px solid #ffffff99;border-radius:50%;background:#061d42d9;color:#fff;cursor:pointer;transition:background .25s,border-color .25s}
+.playback:hover{background:var(--blue);border-color:#fff}
 .arrow{position:absolute;z-index:2;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid #ffffff99;border-radius:50%;background:#061d42d9;color:#fff;cursor:pointer;transition:background .25s,border-color .25s}
 .arrow:hover{background:var(--blue);border-color:#fff}
-.arrow:focus-visible,.thumbnail:focus-visible,.request:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.arrow:focus-visible,.playback:focus-visible,.thumbnail:focus-visible,.request:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .previous{left:1rem}.next{right:1rem}
 .thumbnails{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.7rem;margin-top:.9rem}
 .thumbnail{height:clamp(62px,10vw,104px);position:relative;overflow:hidden;padding:0;border:2px solid transparent;border-radius:4px;background:var(--ice);cursor:pointer;opacity:.7;transition:opacity .25s,border-color .25s}
@@ -22,4 +24,4 @@
 @keyframes show-photo{from{opacity:.5}to{opacity:1}}
 @media(max-width:850px){.section{padding:4rem 7vw}.heading{align-items:flex-start;flex-direction:column;gap:.6rem}}
 @media(max-width:540px){.section{padding:3.5rem 6vw}.stage{height:430px}.thumbnails{gap:.35rem}.thumbnail{height:58px}.arrow{width:40px;height:40px}.previous{left:.5rem}.next{right:.5rem}}
-@media(prefers-reduced-motion:reduce){.photo{animation:none}.request svg{transition:none}}
+@media(prefers-reduced-motion:reduce){.photo{animation:none}.playback{display:none}.request svg{transition:none}}
