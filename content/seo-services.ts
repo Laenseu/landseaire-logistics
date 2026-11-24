@@ -14,12 +14,11 @@ export const seoServices = {
   },
   "customs-brokerage": {
     title: "Customs Brokerage and Cargo Clearance in Manila",
-    description: "Customs brokerage, cargo release, ship-spares clearance and special vessel documentation from A2 Landseaire Logistics Inc. in Manila.",
+    description: "Customs brokerage, cargo release and special vessel documentation from A2 Landseaire Logistics Inc. in Manila.",
     eyebrow: "Customs brokerage",
-    lead: "A2 Landseaire Logistics Inc. provides customs clearance and cargo customs release support, including clearance and delivery of ship spares. The team includes a licensed customs broker.",
+    lead: "A2 Landseaire Logistics Inc. provides customs clearance and cargo customs release support. The team includes a licensed customs broker.",
     offerings: [
       ["Cargo customs release", "Brokerage support for cargo customs releasing and related clearance work."],
-      ["Ship spares", "Customs clearance and delivery coordination for ship spares."],
       ["Special vessel documentation", "Assistance with MARINA Exemption Certificates and customs conversion for special vessels, including dredgers and scientific vessels."],
     ],
     contactService: "Brokerage and Cargo Customs Release",

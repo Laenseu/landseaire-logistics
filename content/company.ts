@@ -11,7 +11,7 @@ export const company = {
   mission: "To consistently deliver superior service and maintain the highest level of reliability in meeting our customers' needs.",
   vision: "To be your preferred shipping agent in every Philippine port and your preferred logistics provider worldwide.",
   services: [
-    ["Customs Clearance and Ship Spares", "Customs clearance and delivery of ship spares."],
+    ["Customs Clearance", "Customs clearance support."],
     ["Brokerage and Cargo Customs Release", "Brokerage and cargo customs releasing."],
     ["Cargo Forwarding and Trucking", "Domestic and international cargo forwarding and trucking."],
     ["Vessel Clearance and Surveys", "Full vessel entrance and exit clearance, and load and discharge surveys."],

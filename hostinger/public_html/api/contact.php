@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-function respond(int $status, string $message): never
+function respond(int $status, string $message, array $details = []): never
 {
     http_response_code($status);
     header('Cache-Control: no-store');
@@ -11,7 +11,7 @@ function respond(int $status, string $message): never
         || str_contains($_SERVER['CONTENT_TYPE'] ?? '', 'application/json');
     if ($acceptsJson) {
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($status < 400 ? ['ok' => true] : ['error' => $message]);
+        echo json_encode(array_merge($status < 400 ? ['ok' => true] : ['error' => $message], $details));
     } else {
         header('Content-Type: text/html; charset=utf-8');
         $escaped = htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -64,7 +64,11 @@ if (!is_file($configPath) || !is_file($mailerPath)) {
     respond(503, 'Email delivery is being set up. Please contact us by phone or email.');
 }
 $config = require $configPath;
-if (!is_array($config) || str_starts_with((string) ($config['smtp_password'] ?? ''), 'REPLACE_WITH_')) {
+if (!is_array($config) || !filter_var($config['from_email'] ?? null, FILTER_VALIDATE_EMAIL)
+    || !filter_var($config['recipient_email'] ?? null, FILTER_VALIDATE_EMAIL)
+    || empty($config['smtp_host']) || empty($config['smtp_username']) || empty($config['smtp_password'])
+    || str_starts_with((string) $config['smtp_host'], 'REPLACE_WITH_')
+    || str_starts_with((string) $config['smtp_password'], 'REPLACE_WITH_')) {
     respond(503, 'Email delivery is being set up. Please contact us by phone or email.');
 }
 require $mailerPath;
@@ -102,8 +106,29 @@ try {
     $mail->Subject = 'Landseaire Logistics Assistance Request';
     $mail->Body = $body;
     $mail->send();
-    respond(200, 'Thank you. Your request has been received.');
 } catch (Throwable $error) {
     error_log('Landseaire contact form: SMTP delivery failed: ' . $error->getMessage());
     respond(503, 'Your request could not be sent. Please contact us by phone or email.');
+}
+
+try {
+    $receipt = new PHPMailer(true);
+    $receipt->isSMTP();
+    $receipt->Host = $config['smtp_host'];
+    $receipt->Port = (int) $config['smtp_port'];
+    $receipt->SMTPAuth = true;
+    $receipt->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $receipt->Username = $config['smtp_username'];
+    $receipt->Password = $config['smtp_password'];
+    $receipt->CharSet = 'UTF-8';
+    $receipt->setFrom($config['from_email'], 'A2 LandSeaAir Logistics');
+    $receipt->addAddress($email, $fullName);
+    $receipt->addReplyTo($config['recipient_email'], 'A2 LandSeaAir Logistics');
+    $receipt->Subject = 'We received your assistance request';
+    $receipt->Body = "Hello {$fullName},\n\nThank you for contacting A2 LandSeaAir Logistics. We received your assistance request for {$service}. Our team will review it and respond through your preferred contact method.\n\nYour message:\n{$message}\n\nIf you need to add information, reply to this email.\n\nA2 LandSeaAir Logistics";
+    $receipt->send();
+    respond(200, 'Thank you. Your request has been received.', ['confirmationSent' => true]);
+} catch (Throwable $error) {
+    error_log('Landseaire contact form: customer confirmation failed: ' . $error->getMessage());
+    respond(200, 'Your request was received, but the confirmation email could not be delivered.', ['confirmationSent' => false]);
 }
