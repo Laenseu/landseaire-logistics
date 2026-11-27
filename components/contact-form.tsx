@@ -31,6 +31,7 @@ export function ContactForm() {
     setError("");
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form));
+    const deliveryUnavailable = `The form is temporarily unavailable. Please email ${company.businessEmail} or try again later.`;
     const openEmailDraft = () => {
       const body = Object.entries(data).filter(([key]) => key !== "website" && key !== "consent").map(([key, value]) => `${key}: ${value}`).join("\n");
       window.location.href = `mailto:${company.businessEmail}?subject=${encodeURIComponent("Landseaire Logistics Assistance Request")}&body=${encodeURIComponent(body)}`;
@@ -46,7 +47,11 @@ export function ContactForm() {
         openEmailDraft();
         return;
       }
-      const result = await response.json() as { error?: string; confirmationSent?: boolean };
+      if (!response.headers.get("content-type")?.toLowerCase().includes("application/json")) {
+        throw new Error(deliveryUnavailable);
+      }
+      const result = await response.json().catch(() => null) as { error?: string; confirmationSent?: boolean } | null;
+      if (!result || typeof result !== "object") throw new Error(deliveryUnavailable);
       if (!response.ok) throw new Error(result.error || "Unable to send your request.");
       form.reset();
       setService("");
@@ -54,7 +59,7 @@ export function ContactForm() {
       setState("success");
       if (result.confirmationSent === false) setError("Your request reached our team, but we could not send a confirmation to your email address.");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to send your request.");
+      setError(cause instanceof TypeError ? deliveryUnavailable : cause instanceof Error ? cause.message : deliveryUnavailable);
       setState("error");
     }
   }
