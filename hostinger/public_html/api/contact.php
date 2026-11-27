@@ -73,22 +73,50 @@ if (!is_array($config) || !filter_var($config['from_email'] ?? null, FILTER_VALI
 }
 require $mailerPath;
 
-$labels = [
-    'Full name' => $fullName,
-    'Company or organization' => $field('organization'),
+$details = array_filter([
+    'Service' => $service,
+    'Name' => $fullName,
+    'Company' => $field('organization'),
     'Email' => $email,
-    'Phone or WhatsApp number' => $field('phone'),
-    'Service required' => $service,
-    'Vessel name' => $field('vessel'),
-    'Port or location' => $field('location'),
-    'Preferred contact method' => $field('preferredContact'),
-    'Message' => $message,
-];
-$body = implode("\n\n", array_map(
-    static fn (string $label, string $value): string => $label . ":\n" . $value,
-    array_keys($labels),
-    array_values($labels)
-));
+    'Phone / WhatsApp' => $field('phone'),
+    'Vessel' => $field('vessel'),
+    'Port / location' => $field('location'),
+    'Preferred contact' => $field('preferredContact'),
+], static fn (string $value): bool => $value !== '');
+$escape = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$emailLayout = static function (string $title, string $content) use ($escape): string {
+    return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+        . '<body style="margin:0;padding:24px 12px;background:#f1f5f9;color:#10213a;font-family:Arial,sans-serif">'
+        . '<table role="presentation" style="width:100%;max-width:620px;margin:0 auto;border-collapse:collapse;background:#ffffff;border:1px solid #d9e3ed">'
+        . '<tr><td style="padding:24px 30px;border-top:5px solid #e5a900">'
+        . '<p style="margin:0 0 12px;color:#14569a;font-size:12px;font-weight:bold;letter-spacing:1px">A2 LANDSEAAIR LOGISTICS</p>'
+        . '<h1 style="margin:0 0 20px;font-size:24px;line-height:1.3;color:#10213a">' . $escape($title) . '</h1>'
+        . $content
+        . '</td></tr></table></body></html>';
+};
+$detailLines = [];
+$detailRows = '';
+foreach ($details as $label => $value) {
+    $detailLines[] = $label . ': ' . (preg_replace('/\s+/u', ' ', $value) ?? $value);
+    $detailRows .= '<tr><th scope="row" style="padding:10px 12px;text-align:left;vertical-align:top;width:35%;border-bottom:1px solid #e6edf3;color:#52647b;font-size:13px">' . $escape($label) . '</th>'
+        . '<td style="padding:10px 12px;vertical-align:top;border-bottom:1px solid #e6edf3;font-size:14px">' . $escape($value) . '</td></tr>';
+}
+$messageHtml = nl2br($escape($message), false);
+$requestText = "New assistance request\n\n" . implode("\n", $detailLines) . "\n\nMessage\n" . $message . "\n\nReply to this email to respond to the requester.";
+$requestHtml = $emailLayout('New assistance request',
+    '<table role="presentation" style="width:100%;border-collapse:collapse;margin:0 0 20px">' . $detailRows . '</table>'
+    . '<p style="margin:0 0 8px;font-weight:bold;font-size:14px">Message</p>'
+    . '<div style="padding:16px;background:#f1f5f9;border-left:3px solid #e5a900;line-height:1.6">' . $messageHtml . '</div>'
+    . '<p style="margin:20px 0 0;color:#52647b;font-size:13px">Reply to this email to respond to the requester.</p>');
+$receiptText = "Hello {$fullName},\n\nThank you for contacting A2 LandSeaAir Logistics. We received your request for {$service}. Our team will review it and respond through your preferred contact method.\n\nYour message\n{$message}\n\nIf you need to add information, reply to this email.\n\nA2 LandSeaAir Logistics";
+$receiptHtml = $emailLayout('We received your request',
+    '<p style="margin:0 0 14px;line-height:1.6">Hello ' . $escape($fullName) . ',</p>'
+    . '<p style="margin:0 0 18px;line-height:1.6">Thank you for contacting A2 LandSeaAir Logistics. We received your request for <strong>' . $escape($service) . '</strong>. Our team will review it and respond through your preferred contact method.</p>'
+    . '<p style="margin:0 0 8px;font-weight:bold;font-size:14px">Your message</p>'
+    . '<div style="padding:16px;background:#f1f5f9;border-left:3px solid #e5a900;line-height:1.6">' . $messageHtml . '</div>'
+    . '<p style="margin:20px 0 0;line-height:1.6">If you need to add information, reply to this email.</p>'
+    . '<p style="margin:20px 0 0;color:#52647b;font-size:13px">A2 LandSeaAir Logistics</p>');
+$subjectService = mb_substr(preg_replace('/\s+/u', ' ', $service) ?? $service, 0, 70);
 
 try {
     $mail = new PHPMailer(true);
@@ -100,11 +128,13 @@ try {
     $mail->Username = $config['smtp_username'];
     $mail->Password = $config['smtp_password'];
     $mail->CharSet = 'UTF-8';
-    $mail->setFrom($config['from_email'], 'Landseaire Logistics Website');
+    $mail->setFrom($config['from_email'], 'A2 LandSeaAir Logistics');
     $mail->addAddress($config['recipient_email']);
     $mail->addReplyTo($email, $fullName);
-    $mail->Subject = 'Landseaire Logistics Assistance Request';
-    $mail->Body = $body;
+    $mail->Subject = 'New assistance request: ' . $subjectService;
+    $mail->isHTML(true);
+    $mail->Body = $requestHtml;
+    $mail->AltBody = $requestText;
     $mail->send();
 } catch (Throwable $error) {
     error_log('Landseaire contact form: SMTP delivery failed: ' . $error->getMessage());
@@ -125,7 +155,9 @@ try {
     $receipt->addAddress($email, $fullName);
     $receipt->addReplyTo($config['recipient_email'], 'A2 LandSeaAir Logistics');
     $receipt->Subject = 'We received your assistance request';
-    $receipt->Body = "Hello {$fullName},\n\nThank you for contacting A2 LandSeaAir Logistics. We received your assistance request for {$service}. Our team will review it and respond through your preferred contact method.\n\nYour message:\n{$message}\n\nIf you need to add information, reply to this email.\n\nA2 LandSeaAir Logistics";
+    $receipt->isHTML(true);
+    $receipt->Body = $receiptHtml;
+    $receipt->AltBody = $receiptText;
     $receipt->send();
     respond(200, 'Thank you. Your request has been received.', ['confirmationSent' => true]);
 } catch (Throwable $error) {
