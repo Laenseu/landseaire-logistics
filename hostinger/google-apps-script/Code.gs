@@ -50,7 +50,7 @@ function sendConfirmation(mail) {
   });
   const status = response.getResponseCode();
   const result = status === 200 ? JSON.parse(response.getContentText()) : null;
-  if (!result?.id) throw new Error(`Gmail confirmation send failed: HTTP ${status}`);
+  if (!result?.id) throw new Error(`Gmail confirmation send failed: HTTP ${status}: ${response.getContentText().slice(0, 600)}`);
 }
 
 function doPost(event) {

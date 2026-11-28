@@ -102,4 +102,6 @@ test('rejects invalid recipient data before sending', () => {
 test('requests only send access to Gmail', () => {
   assert.ok(manifest.oauthScopes.includes('https://www.googleapis.com/auth/gmail.send'));
   assert.ok(!manifest.oauthScopes.includes('https://mail.google.com/'));
+  assert.ok(manifest.dependencies.enabledAdvancedServices.some(service =>
+    service.serviceId === 'gmail' && service.version === 'v1'));
 });
