@@ -17,6 +17,42 @@ function validMail(value) {
     && typeof value.htmlBody === 'string' && value.htmlBody.length > 0 && value.htmlBody.length <= 24000;
 }
 
+// Gmail's send-only API gives a message ID and avoids granting this script inbox access.
+function sendConfirmation(mail) {
+  const boundary = `a2_alt_${Utilities.getUuid().replace(/-/g, '')}`;
+  const raw = [
+    `From: ${SENDER_NAME} <${COMPANY_EMAIL}>`,
+    `To: ${mail.to}`,
+    `Reply-To: ${COMPANY_EMAIL}`,
+    `Subject: ${mail.subject}`,
+    'MIME-Version: 1.0',
+    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+    '',
+    `--${boundary}`,
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    Utilities.base64Encode(mail.body, Utilities.Charset.UTF_8),
+    `--${boundary}`,
+    'Content-Type: text/html; charset=UTF-8',
+    'Content-Transfer-Encoding: base64',
+    '',
+    Utilities.base64Encode(mail.htmlBody, Utilities.Charset.UTF_8),
+    `--${boundary}--`,
+    '',
+  ].join('\r\n');
+  const response = UrlFetchApp.fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: `Bearer ${ScriptApp.getOAuthToken()}` },
+    payload: JSON.stringify({ raw: Utilities.base64EncodeWebSafe(raw, Utilities.Charset.UTF_8) }),
+    muteHttpExceptions: true,
+  });
+  const status = response.getResponseCode();
+  const result = status === 200 ? JSON.parse(response.getContentText()) : null;
+  if (!result?.id) throw new Error(`Gmail confirmation send failed: HTTP ${status}`);
+}
+
 function doPost(event) {
   try {
     const data = JSON.parse(event?.postData?.contents || '{}');
@@ -41,14 +77,7 @@ function doPost(event) {
     });
 
     try {
-      MailApp.sendEmail({
-        to: data.confirmation.to,
-        subject: data.confirmation.subject,
-        body: data.confirmation.body,
-        htmlBody: data.confirmation.htmlBody,
-        name: SENDER_NAME,
-        replyTo: COMPANY_EMAIL,
-      });
+      sendConfirmation(data.confirmation);
       return jsonResponse({ ok: true, confirmationSent: true });
     } catch (error) {
       console.error('Customer confirmation failed', error);
