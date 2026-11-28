@@ -59,19 +59,32 @@ if (mb_strlen($fullName) < 2 || !filter_var($email, FILTER_VALIDATE_EMAIL)
 
 $configPath = dirname(__DIR__, 2) . '/contact-config.php';
 $mailerPath = __DIR__ . '/vendor/autoload.php';
-if (!is_file($configPath) || !is_file($mailerPath)) {
+if (!is_file($configPath)) {
     error_log('Landseaire contact form: mail configuration is missing.');
     respond(503, 'Email delivery is being set up. Please contact us by phone or email.');
 }
 $config = require $configPath;
+$deliveryMode = is_array($config) ? ($config['delivery_mode'] ?? 'smtp') : null;
 if (!is_array($config) || !filter_var($config['from_email'] ?? null, FILTER_VALIDATE_EMAIL)
     || !filter_var($config['recipient_email'] ?? null, FILTER_VALIDATE_EMAIL)
-    || empty($config['smtp_host']) || empty($config['smtp_username']) || empty($config['smtp_password'])
-    || str_starts_with((string) $config['smtp_host'], 'REPLACE_WITH_')
-    || str_starts_with((string) $config['smtp_password'], 'REPLACE_WITH_')) {
+    || !in_array($deliveryMode, ['smtp', 'apps_script'], true)) {
     respond(503, 'Email delivery is being set up. Please contact us by phone or email.');
 }
-require $mailerPath;
+if ($deliveryMode === 'smtp') {
+    if (!is_file($mailerPath) || empty($config['smtp_host']) || empty($config['smtp_username'])
+        || empty($config['smtp_password']) || str_starts_with((string) $config['smtp_host'], 'REPLACE_WITH_')
+        || str_starts_with((string) $config['smtp_password'], 'REPLACE_WITH_')) {
+        respond(503, 'Email delivery is being set up. Please contact us by phone or email.');
+    }
+    require $mailerPath;
+} elseif (!preg_match('~^https://script\\.google\\.com/macros/s/[A-Za-z0-9_-]+/exec$~', (string) ($config['apps_script_url'] ?? ''))
+    || !function_exists('curl_init')
+    || strlen((string) ($config['apps_script_secret'] ?? '')) < 32
+    || str_starts_with((string) ($config['apps_script_secret'] ?? ''), 'REPLACE_WITH_')
+    || $config['from_email'] !== 'ampatiag@a2landseaire.com'
+    || $config['recipient_email'] !== 'ampatiag@a2landseaire.com') {
+    respond(503, 'Email delivery is being set up. Please contact us by phone or email.');
+}
 
 $details = array_filter([
     'Service' => $service,
@@ -117,6 +130,51 @@ $receiptHtml = $emailLayout('We received your request',
     . '<p style="margin:20px 0 0;line-height:1.6">If you need to add information, reply to this email.</p>'
     . '<p style="margin:20px 0 0;color:#52647b;font-size:13px">A2 LandSeaAir Logistics</p>');
 $subjectService = mb_substr(preg_replace('/\s+/u', ' ', $service) ?? $service, 0, 70);
+
+if ($deliveryMode === 'apps_script') {
+    $payload = json_encode([
+        'secret' => $config['apps_script_secret'],
+        'request' => [
+            'subject' => 'New assistance request: ' . $subjectService,
+            'body' => $requestText,
+            'htmlBody' => $requestHtml,
+            'replyTo' => $email,
+        ],
+        'confirmation' => [
+            'to' => $email,
+            'subject' => 'We received your assistance request',
+            'body' => $receiptText,
+            'htmlBody' => $receiptHtml,
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+    $curl = curl_init($config['apps_script_url']);
+    if ($payload === false || $curl === false) {
+        respond(503, 'Your request could not be sent. Please contact us by phone or email.');
+    }
+    curl_setopt_array($curl, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $payload,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 3,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_TIMEOUT => 25,
+    ]);
+    $resultBody = curl_exec($curl);
+    $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($curl);
+    curl_close($curl);
+    $result = is_string($resultBody) ? json_decode($resultBody, true) : null;
+    if ($status !== 200 || !is_array($result) || ($result['ok'] ?? false) !== true) {
+        error_log('Landseaire contact form: Apps Script delivery failed. HTTP ' . $status . ' ' . $curlError);
+        respond(503, 'Your request could not be sent. Please contact us by phone or email.');
+    }
+    $confirmed = ($result['confirmationSent'] ?? false) === true;
+    respond(200, $confirmed ? 'Thank you. Your request has been received.'
+        : 'Your request was received, but the confirmation email could not be delivered.',
+        ['confirmationSent' => $confirmed]);
+}
 
 try {
     $mail = new PHPMailer(true);

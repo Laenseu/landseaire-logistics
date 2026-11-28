@@ -1,0 +1,10 @@
+<?php
+// Save as contact-config.php beside public_html only after the Apps Script is authorized.
+// Keep the real URL and shared secret outside public_html and out of source control.
+return [
+    'delivery_mode' => 'apps_script',
+    'apps_script_url' => 'REPLACE_WITH_APPS_SCRIPT_EXEC_URL',
+    'apps_script_secret' => 'REPLACE_WITH_PRIVATE_RANDOM_SECRET_AT_LEAST_32_CHARACTERS',
+    'from_email' => 'ampatiag@a2landseaire.com',
+    'recipient_email' => 'ampatiag@a2landseaire.com',
+];
